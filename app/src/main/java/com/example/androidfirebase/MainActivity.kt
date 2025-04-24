@@ -23,10 +23,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
             val authViewModel: AuthViewModel = viewModel()
+            val roomViewModel: RoomViewModel = viewModel()
             val context = LocalContext.current
             AndroidFirebaseTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    NavigationGraph(navController = navController, authViewModel = authViewModel, context = context)
+                    NavigationGraph(navController = navController, authViewModel = authViewModel, roomViewModel = roomViewModel)
                 }
             }
         }

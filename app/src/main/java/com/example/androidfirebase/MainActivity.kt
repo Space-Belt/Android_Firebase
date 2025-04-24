@@ -10,7 +10,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
 import com.example.androidfirebase.ui.theme.AndroidFirebaseTheme
 
 class MainActivity : ComponentActivity() {
@@ -18,9 +21,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val navController = rememberNavController()
+            val authViewModel: AuthViewModel = viewModel()
+            val context = LocalContext.current
             AndroidFirebaseTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-
+                    NavigationGraph(navController = navController, authViewModel = authViewModel, context = context)
                 }
             }
         }

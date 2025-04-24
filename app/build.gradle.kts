@@ -44,6 +44,7 @@ android {
 
 dependencies {
 
+    implementation(libs.androidx.datastore.core.android)
     val room = "2.6.0"
     // Room
     implementation("androidx.room:room-runtime:$room")

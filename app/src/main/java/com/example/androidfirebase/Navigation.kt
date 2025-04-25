@@ -8,6 +8,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.androidfirebase.ui.theme.ChatRoomListScreen
+import com.example.androidfirebase.ui.theme.ChatScreen
 import com.example.androidfirebase.ui.theme.LoginScreen
 import com.example.androidfirebase.ui.theme.SignUpScreen
 
@@ -15,7 +17,7 @@ import com.example.androidfirebase.ui.theme.SignUpScreen
 fun NavigationGraph(
     navController: NavHostController,
     authViewModel: AuthViewModel,
-    context: Context,
+    roomViewModel: RoomViewModel,
 ) {
 
     NavHost(
@@ -33,16 +35,20 @@ fun NavigationGraph(
                 authViewModel = authViewModel,
                 onNavigateToSignUp = { navController.navigate(Screen.SignupScreen.route) },
                 onSignInSuccess = {
-                    Log.d("에러발생!!!!", "돌아감????????????????")
-                    Toast.makeText(
-                        context,
-                        "로그인 인증 완료",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    navController.navigate(Screen.ChatRoomsScreen.route)
                 }
             ) {
                 navController.navigate(Screen.ChatRoomsScreen.route)
             }
+        }
+        composable(Screen.ChatRoomsScreen.route) {
+            ChatRoomListScreen(roomViewModel = roomViewModel){
+                navController.navigate("${Screen.ChatScreen.route}/${it.id}")
+            }
+        }
+        composable("${Screen.ChatScreen.route}/{roomId}") {
+            val roomId: String = it.arguments?.getString("roomId") ?: ""
+            ChatScreen(roomId = roomId)
         }
     }
 }

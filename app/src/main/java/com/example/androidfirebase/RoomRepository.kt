@@ -7,11 +7,11 @@ import kotlinx.coroutines.tasks.await
 class RoomRepository(private val firestore: FirebaseFirestore) {
 
     suspend fun createRoom(name: String): Result<Unit> = try {
-        val document = firestore.collection("rooms").document()
-        val room = Room(id = document.id,name = name)
-        document.set(room).await()
+//        val document = firestore.collection("rooms").document()
+        val room = Room(name = name)
+//        document.set(room).await()
+        firestore.collection("rooms").add(room).await()
         Log.d("도냐?", "성공")
-//        firestore.collection("rooms").add(room).await()
         Result.Success(Unit)
     } catch (e: Exception) {
         Log.d("도냐?", "${e.message}")

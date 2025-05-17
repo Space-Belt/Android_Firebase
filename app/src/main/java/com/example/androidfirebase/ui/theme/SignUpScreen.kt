@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 
 import androidx.compose.material3.Text
@@ -24,6 +25,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.androidfirebase.AuthViewModel
+import java.util.regex.Pattern
 
 @Composable
 fun SignUpScreen(
@@ -32,9 +34,15 @@ fun SignUpScreen(
 ){
 
     var email by remember { mutableStateOf("") }
+    var isEmailValid by remember { mutableStateOf(true) }
+
     var password by remember { mutableStateOf("") }
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
+
+    val emailPattern = Pattern.compile(
+        "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
+    )
 
     Column(
         modifier = Modifier
@@ -45,12 +53,23 @@ fun SignUpScreen(
     ){
         OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
+            onValueChange = {
+                email = it
+                isEmailValid = emailPattern.matcher(it).matches()
+            },
             label = { Text("Email") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp)
         )
+        if (!isEmailValid && email.isNotBlank()) {
+            Text(
+                text = "올바른 이메일 주소를 입력하세요.",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 16.dp)
+            )
+        }
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },

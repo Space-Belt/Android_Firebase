@@ -35,13 +35,20 @@ fun SignUpScreen(
 
     var email by remember { mutableStateOf("") }
     var isEmailValid by remember { mutableStateOf(true) }
+    var isPasswordValid by remember { mutableStateOf(true) }
+    var isPasswordCheck by remember {  mutableStateOf(true) }
 
     var password by remember { mutableStateOf("") }
+    var checkPassword by remember { mutableStateOf("") }
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
 
     val emailPattern = Pattern.compile(
         "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
+    )
+
+    val passwordPattern = Pattern.compile(
+        "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[!@#\$%^&*])[A-Za-z\\d!@#\$%^&*]{8,}$"
     )
 
     Column(
@@ -72,13 +79,46 @@ fun SignUpScreen(
         }
         OutlinedTextField(
             value = password,
-            onValueChange = { password = it },
+            onValueChange = {
+                password = it
+                isPasswordValid = passwordPattern.matcher(it).matches()
+            },
             label = { Text("Password") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp),
             visualTransformation = PasswordVisualTransformation()
         )
+        if (!isPasswordValid && password.isNotBlank()) {
+            Text(
+                text = "비밀번호는 8자이상 숫자,알파벳,특수기호를 포함해야합니다",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 16.dp)
+            )
+        }
+        OutlinedTextField(
+            value = checkPassword,
+            onValueChange = {
+                checkPassword = it
+                isPasswordCheck = (password == it)
+            },
+            label = { Text("Password Check") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            visualTransformation = PasswordVisualTransformation()
+        )
+
+        if (!isPasswordCheck && checkPassword.isNotBlank()) {
+            Text(
+                text = "비밀번호가 일치하지 않습니다.",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 16.dp)
+            )
+        }
+
         OutlinedTextField(
             value = firstName,
             onValueChange = { firstName = it },
@@ -87,6 +127,8 @@ fun SignUpScreen(
                 .fillMaxWidth()
                 .padding(8.dp)
         )
+
+
         OutlinedTextField(
             value = lastName,
             onValueChange = { lastName = it },

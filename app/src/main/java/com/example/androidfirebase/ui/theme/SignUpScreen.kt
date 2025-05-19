@@ -1,5 +1,6 @@
 package com.example.androidfirebase.ui.theme
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,7 +16,9 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -25,12 +28,14 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.androidfirebase.AuthViewModel
+import com.example.androidfirebase.Result
 import java.util.regex.Pattern
 
 @Composable
 fun SignUpScreen(
     authViewModel: AuthViewModel,
     onNavigateToLogin: () -> Unit
+
 ){
 
     var email by remember { mutableStateOf("") }
@@ -51,6 +56,25 @@ fun SignUpScreen(
         "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[!@#\$%^&*])[A-Za-z\\d!@#\$%^&*]{8,}$"
     )
 
+    val authResult by authViewModel.authResult.observeAsState()
+
+    val isSignUpSuccess = (authResult as? Result.Success<Boolean>)?.data == true
+    // 회원가입 성공 시 처리
+    LaunchedEffect(isSignUpSuccess) {
+        if (isSignUpSuccess) {
+            // 입력값 초기화
+            email = ""
+            password = ""
+            checkPassword = ""
+            firstName = ""
+            lastName = ""
+            // 로그인 화면으로 이동
+            onNavigateToLogin()
+        }
+    }
+
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -64,7 +88,7 @@ fun SignUpScreen(
                 email = it
                 isEmailValid = emailPattern.matcher(it).matches()
             },
-            label = { Text("Email") },
+            label = { Text("이메일") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp)
@@ -83,7 +107,7 @@ fun SignUpScreen(
                 password = it
                 isPasswordValid = passwordPattern.matcher(it).matches()
             },
-            label = { Text("Password") },
+            label = { Text("비밀번호") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp),
@@ -103,7 +127,7 @@ fun SignUpScreen(
                 checkPassword = it
                 isPasswordCheck = (password == it)
             },
-            label = { Text("Password Check") },
+            label = { Text("비밀번호 확인") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp),
@@ -122,27 +146,27 @@ fun SignUpScreen(
         OutlinedTextField(
             value = firstName,
             onValueChange = { firstName = it },
-            label = { Text("First Name") },
+            label = { Text("이름") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp)
         )
 
+        if (firstName.isNotBlank()) {
+            Text(
+                text = "이름을 입력해주세요.",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 16.dp)
+            )
+        }
 
-        OutlinedTextField(
-            value = lastName,
-            onValueChange = { lastName = it },
-            label = { Text("Last Name") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        )
         Button (
             onClick = {
                 authViewModel.signUp(email, password, firstName, lastName)
-
                 email = ""
                 password = ""
+                checkPassword = ""
                 firstName = ""
                 lastName = ""
             },
@@ -150,10 +174,10 @@ fun SignUpScreen(
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            Text("Sign Up")
+            Text("회원가입")
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Text("Already have an account? Sign in.",
+        Text("이미 회원이신가요? 로그인하세요!",
             modifier = Modifier.clickable {
                 onNavigateToLogin()
             }

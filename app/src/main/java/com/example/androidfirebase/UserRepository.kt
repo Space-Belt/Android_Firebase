@@ -7,6 +7,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
+
 class UserRepository(private val auth: FirebaseAuth,
                      private val firestore: FirebaseFirestore
 ) {
@@ -45,17 +47,27 @@ class UserRepository(private val auth: FirebaseAuth,
 
     suspend fun signUp(email: String, password: String, firstName: String, lastName: String): Result<Boolean> =
         try {
-//            auth.createUserWithEmailAndPassword(email, password).await()
             val authResult = auth.createUserWithEmailAndPassword(email, password).await()
             //add user to firestore
             val user = User(firstName, lastName, email,
                 uid = authResult.user?.uid ?: throw IllegalStateException("UID is null"))
             saveUserToFirestore(user)
             Result.Success(true)
+        } catch (e: FirebaseAuthUserCollisionException) {
+            Log.e("유저레포지토리!!!!", "이미 등록된 이메일: ${e.message}")
+            Result.Error(Exception("이미 등록된 이메일입니다."))
         } catch (e: Exception) {
             Log.e("유저레포지토리!!!!", "getCurrentUser failed: ${e.stackTraceToString()}")
             Result.Error(e)
         }
+
+
+
+
+//        catch (e: Exception) {
+//            Log.e("유저레포지토리!!!!", "getCurrentUser failed: ${e.stackTraceToString()}")
+//            Result.Error(e)
+//        }
 
     suspend fun login(email: String, password: String): Result<Boolean> =
         try {

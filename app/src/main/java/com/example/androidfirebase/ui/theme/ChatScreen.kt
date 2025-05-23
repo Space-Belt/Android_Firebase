@@ -21,6 +21,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -47,58 +48,85 @@ import com.example.androidfirebase.utils.formatTimestamp
 @Composable
 fun ChatScreen(
     roomId: String,
+    roomName: String,
+    onBackPressed: () -> Unit,
     messageViewModel: MessageViewModel = viewModel()
 ) {
     messageViewModel.setRoomId(roomId)
     val messages by messageViewModel.messages.observeAsState(emptyList())
     val text = remember { mutableStateOf("") }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        // Display the chat messages
-        LazyColumn (
-            modifier = Modifier.weight(1f)
-        ) {
-            items(messages) { message ->
-                ChatMessageItem(message = message.copy(
-                    isSentByCurrentUser = message.senderId == messageViewModel.currentUser.value?.email
-                ))
-            }
-        }
-
-        // Chat input field and send icon
-        Row (
+    Column {
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
-                .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp)),
-            verticalAlignment = Alignment.CenterVertically,
+                .background(Color.White)
+                .padding(vertical = 12.dp, horizontal = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            BasicTextField(
-                value = text.value,
-                onValueChange = { text.value = it },
-                textStyle = TextStyle.Default.copy(fontSize = 16.sp),
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(8.dp)
+            IconButton(onClick = onBackPressed) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "뒤로가기"
+                )
+            }
+            Text(
+                text = roomName,
+                style = TextStyle(fontSize = 20.sp, color = Color.Black),
+                modifier = Modifier.padding(start = 8.dp)
             )
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
 
-            IconButton (
-                onClick = {
-                    // Send the message when the icon is clicked
-                    if (text.value.isNotEmpty()) {
-                        messageViewModel.sendMessage(text.value.trim())
-                        text.value = ""
-                    }
-                    messageViewModel.loadMessages()
+
+
+            // Display the chat messages
+            LazyColumn (
+                modifier = Modifier.weight(1f)
+            ) {
+                items(messages) { message ->
+                    ChatMessageItem(message = message.copy(
+                        isSentByCurrentUser = message.senderId == messageViewModel.currentUser.value?.email
+                    ))
                 }
-            ){
-                Icon(imageVector = Icons.Default.Send, contentDescription = "Send")
+            }
+
+            // Chat input field and send icon
+            Row (
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+                    .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp)),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                BasicTextField(
+                    value = text.value,
+                    onValueChange = { text.value = it },
+                    textStyle = TextStyle.Default.copy(fontSize = 16.sp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(8.dp)
+                )
+
+                IconButton (
+                    onClick = {
+                        // Send the message when the icon is clicked
+                        if (text.value.isNotEmpty()) {
+                            messageViewModel.sendMessage(text.value.trim())
+                            text.value = ""
+                        }
+                        messageViewModel.loadMessages()
+                    }
+                ){
+                    Icon(imageVector = Icons.Default.Send, contentDescription = "Send")
+                }
             }
         }
     }
+
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -110,6 +138,35 @@ fun ChatMessageItem(message: Message) {
             .padding(8.dp),
         horizontalAlignment = if (message.isSentByCurrentUser) Alignment.End else Alignment.Start
     ) {
+
+//        Text(
+//            text = message.senderFirstName,
+//            style = TextStyle(
+//                fontSize = 12.sp,
+//                color = Color.Gray
+//            )
+//        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(bottom = 2.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .background(
+                        if (message.isSentByCurrentUser) Color(0xFFBB86FC) else Color(0xFFE0E0E0),
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    .padding(horizontal = 10.dp, vertical = 4.dp)
+            ) {
+                Text(
+                    text = message.senderFirstName,
+                    color = if (message.isSentByCurrentUser) Color.White else Color.Black,
+                    style = TextStyle(fontSize = 13.sp)
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
         Box(
             modifier = Modifier
                 .background(
@@ -124,14 +181,6 @@ fun ChatMessageItem(message: Message) {
                 style = TextStyle(fontSize = 16.sp)
             )
         }
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = message.senderFirstName,
-            style = TextStyle(
-                fontSize = 12.sp,
-                color = Color.Gray
-            )
-        )
         Text(
             text = formatTimestamp(message.timestamp), // Replace with actual timestamp logic
             style = TextStyle(

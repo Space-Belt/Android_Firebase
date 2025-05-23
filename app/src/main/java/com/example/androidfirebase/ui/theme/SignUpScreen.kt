@@ -57,6 +57,7 @@ fun SignUpScreen(
     )
 
     val authResult by authViewModel.authResult.observeAsState()
+    val errorMessage by authViewModel.errorMessage.observeAsState()
 
     val isSignUpSuccess = (authResult as? Result.Success<Boolean>)?.data == true
     // 회원가입 성공 시 처리
@@ -175,6 +176,14 @@ fun SignUpScreen(
                 .padding(8.dp)
         ) {
             Text("회원가입")
+        }
+        if (!errorMessage.isNullOrEmpty()) {
+            Text(
+                text = errorMessage!!,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 16.dp)
+            )
         }
         Spacer(modifier = Modifier.height(16.dp))
         Text("이미 회원이신가요? 로그인하세요!",

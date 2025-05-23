@@ -1,8 +1,10 @@
 package com.example.androidfirebase
 
 import android.content.Context
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
@@ -13,6 +15,7 @@ import com.example.androidfirebase.ui.theme.ChatScreen
 import com.example.androidfirebase.ui.theme.LoginScreen
 import com.example.androidfirebase.ui.theme.SignUpScreen
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavigationGraph(
     navController: NavHostController,
@@ -48,7 +51,12 @@ fun NavigationGraph(
         }
         composable("${Screen.ChatScreen.route}/{roomId}") {
             val roomId: String = it.arguments?.getString("roomId") ?: ""
-            ChatScreen(roomId = roomId)
+            val roomName: String = it.arguments?.getString("roomName") ?: ""
+            ChatScreen(
+                roomId = roomId,
+                roomName = "코틀린 스터디방",
+                onBackPressed = { navController.popBackStack() }
+            )
         }
     }
 }

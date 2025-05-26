@@ -29,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.androidfirebase.AuthViewModel
 import com.example.androidfirebase.Result
+import com.google.firebase.auth.FirebaseAuthException
 import java.util.regex.Pattern
 
 @Composable
@@ -37,6 +38,22 @@ fun SignUpScreen(
     onNavigateToLogin: () -> Unit
 
 ){
+    val firebaseAuthErrorMessages = mapOf(
+        "ERROR_INVALID_EMAIL" to "유효하지 않은 이메일 형식입니다.",
+        "ERROR_EMAIL_ALREADY_IN_USE" to "이미 사용 중인 이메일입니다.",
+        "ERROR_USER_NOT_FOUND" to "존재하지 않는 계정입니다.",
+        "ERROR_WRONG_PASSWORD" to "비밀번호가 일치하지 않습니다.",
+        "ERROR_USER_DISABLED" to "비활성화된 계정입니다.",
+        "ERROR_TOO_MANY_REQUESTS" to "잠시 후 다시 시도해주세요.",
+        "ERROR_MISSING_EMAIL" to "이메일을 입력해주세요.",
+        "ERROR_MISSING_PASSWORD" to "비밀번호를 입력해주세요."
+        // 필요에 따라 추가
+    )
+
+    fun translateErrorMessage(errorCode: String?): String {
+        if (errorCode == null) return ""
+        return firebaseAuthErrorMessages[errorCode] ?: errorCode
+    }
 
     var email by remember { mutableStateOf("") }
     var isEmailValid by remember { mutableStateOf(true) }
@@ -179,7 +196,7 @@ fun SignUpScreen(
         }
         if (!errorMessage.isNullOrEmpty()) {
             Text(
-                text = errorMessage!!,
+                text = translateErrorMessage(errorMessage),
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(start = 16.dp)

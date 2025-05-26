@@ -80,13 +80,11 @@ fun SignUpScreen(
     // 회원가입 성공 시 처리
     LaunchedEffect(isSignUpSuccess) {
         if (isSignUpSuccess) {
-            // 입력값 초기화
             email = ""
             password = ""
             checkPassword = ""
             firstName = ""
             lastName = ""
-            // 로그인 화면으로 이동
             onNavigateToLogin()
         }
     }

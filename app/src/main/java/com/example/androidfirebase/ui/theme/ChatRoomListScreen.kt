@@ -21,6 +21,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,10 +45,13 @@ fun ChatRoomListScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text("Chat Rooms", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+        Text("채팅방",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(20.dp)
+        )
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Display a list of chat rooms
         LazyColumn {
             items(rooms) {room ->
                 RoomItem(room = room, onJoinClicked = {onJoinClicked(room)})
@@ -56,14 +60,13 @@ fun ChatRoomListScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Button to create a new room
         Button(
             onClick = {
                 showDialog = true
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Create Room")
+            Text("방 생성")
         }
 
         if (showDialog){
@@ -115,13 +118,14 @@ fun RoomItem(room: Room, onJoinClicked: (Room) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(text = room.name, fontSize = 16.sp, fontWeight = FontWeight.Normal)
         OutlinedButton(
             onClick = { onJoinClicked(room) }
         ) {
-            Text("Join")
+            Text("들어가기")
         }
     }
 }

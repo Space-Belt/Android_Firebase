@@ -138,14 +138,6 @@ fun ChatMessageItem(message: Message) {
             .padding(8.dp),
         horizontalAlignment = if (message.isSentByCurrentUser) Alignment.End else Alignment.Start
     ) {
-
-//        Text(
-//            text = message.senderFirstName,
-//            style = TextStyle(
-//                fontSize = 12.sp,
-//                color = Color.Gray
-//            )
-//        )
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(bottom = 2.dp)

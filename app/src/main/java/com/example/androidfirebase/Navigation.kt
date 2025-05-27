@@ -45,7 +45,7 @@ fun NavigationGraph(
             }
         }
         composable(Screen.ChatRoomsScreen.route) {
-            ChatRoomListScreen(roomViewModel = roomViewModel){
+            ChatRoomListScreen(roomViewModel = roomViewModel, authViewModel){
                 navController.navigate("${Screen.ChatScreen.route}/${it.id}")
             }
         }

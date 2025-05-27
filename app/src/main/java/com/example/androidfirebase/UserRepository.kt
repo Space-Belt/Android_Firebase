@@ -69,13 +69,43 @@ class UserRepository(private val auth: FirebaseAuth,
 //            Result.Error(e)
 //        }
 
+
+
     suspend fun login(email: String, password: String): Result<Boolean> =
         try {
             auth.signInWithEmailAndPassword(email, password).await()
+            Log.d("UserRepository", "로그인 성공")
             Result.Success(true)
         } catch (e: Exception) {
+            Log.e("UserRepository", "로그인 실패: ${e.message}")
             Result.Error(e)
         }
+
+    fun logout(): Result<Boolean> =
+        try {
+            auth.signOut()
+            _currentUser.postValue(null) // 현재 사용자 정보 클리어
+            Log.d("UserRepository", "로그아웃 성공")
+            Result.Success(true)
+        } catch (e: Exception) {
+            Log.e("UserRepository", "로그아웃 실패: ${e.message}")
+            Result.Error(e)
+        }
+
+    // 현재 로그인 상태 확인
+    fun isLoggedIn(): Boolean {
+        return auth.currentUser != null
+    }
+
+    // 현재 사용자 UID 가져오기
+    fun getCurrentUserId(): String? {
+        return auth.currentUser?.uid
+    }
+
+    // 현재 사용자 이메일 가져오기
+    fun getCurrentUserEmail(): String? {
+        return auth.currentUser?.email
+    }
 }
 
 object Injection {

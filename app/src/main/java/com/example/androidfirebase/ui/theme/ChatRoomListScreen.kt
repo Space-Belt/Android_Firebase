@@ -35,14 +35,41 @@ import com.example.androidfirebase.Room
 import com.example.androidfirebase.RoomViewModel
 
 @Composable
+fun RoomItem(room: Room, onJoinClicked: (Room) -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(text = room.name, fontSize = 16.sp, fontWeight = FontWeight.Normal)
+        OutlinedButton(
+            onClick = { onJoinClicked(room) }
+        ) {
+            Text("들어가기")
+        }
+    }
+}
+
+@Composable
 fun ChatRoomListScreen(
     roomViewModel: RoomViewModel = viewModel(),
     authViewModel: AuthViewModel,
-    onJoinClicked: (Room) -> Unit
+    onJoinClicked: (Room) -> Unit,
+    onLogoutClicked: () -> Unit
+
 ) {
     val rooms by roomViewModel.rooms.observeAsState(emptyList())
     var showDialog by remember { mutableStateOf(false) }
     var name by remember { mutableStateOf("") }
+
+    val errorMessage by authViewModel.errorMessage.observeAsState()
+    val logoutSuccess by authViewModel.logoutSuccess.observeAsState()
+
+    if (logoutSuccess == true) {
+        onLogoutClicked()
+    }
 
     Column(
         modifier = Modifier
@@ -125,24 +152,6 @@ fun ChatRoomListScreen(
 
     }
 
-}
-
-@Composable
-fun RoomItem(room: Room, onJoinClicked: (Room) -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(text = room.name, fontSize = 16.sp, fontWeight = FontWeight.Normal)
-        OutlinedButton(
-            onClick = { onJoinClicked(room) }
-        ) {
-            Text("들어가기")
-        }
-    }
 }
 
 @Preview

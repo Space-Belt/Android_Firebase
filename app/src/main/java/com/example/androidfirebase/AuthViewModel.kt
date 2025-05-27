@@ -19,6 +19,10 @@ class AuthViewModel : ViewModel() {
     private val _authResult = MutableLiveData<Result<Boolean>>()
     val authResult: LiveData<Result<Boolean>> get() = _authResult
 
+    // 로그아웃
+    private val _logoutSuccess = MutableLiveData<Boolean>()
+    val logoutSuccess: LiveData<Boolean> get() = _logoutSuccess
+
     // 인증 상태 관리
     private val _isAuthenticated = MutableLiveData<Boolean>()
     val isAuthenticated: LiveData<Boolean> get() = _isAuthenticated
@@ -71,10 +75,18 @@ class AuthViewModel : ViewModel() {
     fun logout() {
         viewModelScope.launch {
             try {
-                userRepository.logout()
-                _errorMessage.value = null
-                Log.d("로그아웃", "로그아웃 성공")
+                val result = userRepository.logout()
+                if (result is Result.Success) {
+                    _logoutSuccess.value = true
+                    _errorMessage.value = null
+                    Log.d("로그아웃", "로그아웃 성공")
+                } else if (result is Result.Error) {
+                    _logoutSuccess.value = false
+                    _errorMessage.value = "로그아웃 중 오류가 발생했습니다."
+                    Log.e("로그아웃", "로그아웃 실패: ${(result as Result.Error).exception.message}")
+                }
             } catch (e: Exception) {
+                _logoutSuccess.value = false
                 _errorMessage.value = "로그아웃 중 오류가 발생했습니다."
                 Log.e("로그아웃", "로그아웃 실패: ${e.message}")
             }

@@ -118,7 +118,6 @@ fun ChatScreen(
                             messageViewModel.sendMessage(text.value.trim())
                             text.value = ""
                         }
-                        messageViewModel.loadMessages()
                     }
                 ){
                     Icon(imageVector = Icons.Default.Send, contentDescription = "Send")

@@ -1,5 +1,6 @@
 package com.example.androidfirebase.ui.theme
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -64,13 +66,6 @@ fun ChatRoomListScreen(
     var showDialog by remember { mutableStateOf(false) }
     var name by remember { mutableStateOf("") }
 
-    val errorMessage by authViewModel.errorMessage.observeAsState()
-    val logoutSuccess by authViewModel.logoutSuccess.observeAsState()
-
-    if (logoutSuccess == true) {
-        onLogoutClicked()
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -101,7 +96,7 @@ fun ChatRoomListScreen(
         }
         Button(
             onClick = {
-                authViewModel.logout()
+                onLogoutClicked()
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(

@@ -2,6 +2,7 @@ package com.example.androidfirebase
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -24,11 +25,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val navController = rememberNavController()
-            val authViewModel: AuthViewModel = viewModel()
-            val roomViewModel: RoomViewModel = viewModel()
-            val context = LocalContext.current
             AndroidFirebaseTheme {
+                val navController = rememberNavController()
+                val authViewModel: AuthViewModel = viewModel()
+                val roomViewModel: RoomViewModel = viewModel()
+                val context = LocalContext.current
+
+                Log.d("MainActivity", "setContent 진입")
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NavigationGraph(
                         navController = navController,

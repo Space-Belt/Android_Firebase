@@ -24,7 +24,7 @@ class AuthViewModel : ViewModel() {
     val logoutSuccess: LiveData<Boolean> get() = _logoutSuccess
 
     // 인증 상태 관리
-    private val _isAuthenticated = MutableLiveData<Boolean>()
+    private val _isAuthenticated = MutableLiveData<Boolean>(false)
     val isAuthenticated: LiveData<Boolean> get() = _isAuthenticated
 
     // 유저 정보
@@ -93,6 +93,11 @@ class AuthViewModel : ViewModel() {
         }
     }
 
+    fun clearLogoutState() {
+        _logoutSuccess.value = false
+    }
+
+
     private fun getCurrentUserInfo() {
         viewModelScope.launch {
             val result = userRepository.getCurrentUser()
@@ -103,6 +108,7 @@ class AuthViewModel : ViewModel() {
             }
         }
     }
+
 
     fun checkAuthenticationStatus() {
         _isAuthenticated.value = FirebaseAuth.getInstance().currentUser != null

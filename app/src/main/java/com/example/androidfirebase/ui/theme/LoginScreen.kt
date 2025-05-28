@@ -13,6 +13,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 
@@ -44,7 +45,20 @@ fun LoginScreen(
         mutableStateOf("")
     }
 
-    val result by authViewModel.authResult.observeAsState()
+    val authResult by authViewModel.authResult.observeAsState()
+    val errorMessage by authViewModel.errorMessage.observeAsState()
+
+    val koreanError = when {
+        errorMessage?.contains("password") == true -> "비밀번호가 올바르지 않습니다."
+        errorMessage?.contains("no user") == true -> "해당 이메일로 가입된 사용자가 없습니다."
+        else -> errorMessage
+    }
+
+    LaunchedEffect(authResult) {
+        if (authResult is Result.Success) {
+            onSignInSuccess()
+        }
+    }
 
     Column (
         modifier = Modifier
@@ -79,21 +93,16 @@ fun LoginScreen(
                 .padding(8.dp),
             visualTransformation = PasswordVisualTransformation()
         )
+        if (!errorMessage.isNullOrEmpty()) {
+            Text(
+                text = koreanError ?: "",
+                color = Color.Red,
+                fontSize = 14.sp
+            )
+        }
         Button (
             onClick = {
                 authViewModel.login(email, password)
-                when (result) {
-                    is Result.Success->{
-                        onSignInSuccess()
-                    }
-                    is Result.Error ->{
-
-                    }
-
-                    else -> {
-
-                    }
-                }
             },
             modifier = Modifier
                 .fillMaxWidth()

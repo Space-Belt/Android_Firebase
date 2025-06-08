@@ -1,6 +1,7 @@
 package com.example.androidfirebase.ui.theme
 
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -49,10 +50,12 @@ fun LoginScreen(
     val errorMessage by authViewModel.errorMessage.observeAsState()
 
     val koreanError = when {
-        errorMessage?.contains("password") == true -> "비밀번호가 올바르지 않습니다."
+        errorMessage?.contains("incorrect") == true -> "정보가 올바르지 않습니다."
         errorMessage?.contains("no user") == true -> "해당 이메일로 가입된 사용자가 없습니다."
         else -> errorMessage
     }
+
+    Log.d("아아앙", "$errorMessage")
 
     LaunchedEffect(authResult) {
         if (authResult is Result.Success) {
@@ -108,10 +111,10 @@ fun LoginScreen(
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            Text("Login")
+            Text("로그인")
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Text("Don't have an account? Sign up.",
+        Text("회원가입하기",
             modifier = Modifier.clickable {
                 onNavigateToSignUp()
             }

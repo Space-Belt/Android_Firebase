@@ -62,15 +62,6 @@ class UserRepository(private val auth: FirebaseAuth,
         }
 
 
-
-
-//        catch (e: Exception) {
-//            Log.e("유저레포지토리!!!!", "getCurrentUser failed: ${e.stackTraceToString()}")
-//            Result.Error(e)
-//        }
-
-
-
     suspend fun login(email: String, password: String): Result<Boolean> =
         try {
             auth.signInWithEmailAndPassword(email, password).await()
